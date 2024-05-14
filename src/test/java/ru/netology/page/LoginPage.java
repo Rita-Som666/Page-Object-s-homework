@@ -6,9 +6,10 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
 
-    public void validLogin(){
+    public VerificationPage validLogin() {
         $("[data-test-id='login'] .input__control").sendKeys(UserInfo.getLogin());
         $("[data-test-id='password'] .input__control").sendKeys(UserInfo.getPassword());
         $("[data-test-id='action-login']").click();
+        return new VerificationPage();
     }
 }
