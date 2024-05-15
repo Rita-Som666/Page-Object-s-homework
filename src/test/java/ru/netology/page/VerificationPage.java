@@ -2,7 +2,7 @@ package ru.netology.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import ru.netology.data.UserInfo;
+import ru.netology.data.UserInfo.User;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -15,7 +15,7 @@ public class VerificationPage {
     }
 
     public static DashBoardPage validCode() {
-        code.sendKeys(UserInfo.getCode());
+        code.sendKeys(User.getCode());
         button.click();
         return new DashBoardPage();
     }

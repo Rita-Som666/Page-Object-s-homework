@@ -4,6 +4,7 @@ package ru.netology.test;
 import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.netology.data.UserInfo;
 import ru.netology.page.ActionTransferPage;
 import ru.netology.page.DashBoardPage;
 import ru.netology.page.LoginPage;
@@ -13,6 +14,9 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
+import static ru.netology.data.UserInfo.CardsInfo.*;
+
+import ru.netology.data.UserInfo.CardsInfo;
 
 public class TransferTest {
     @BeforeEach
@@ -34,8 +38,7 @@ public class TransferTest {
             DashBoardPage.actionTransferToCard1();
 
 
-            ActionTransferPage.transferToCard1(sum);
-            $(byText("Ваши карты")).shouldBe(Condition.visible);
+            ActionTransferPage.transferToCard(sum, getValueTopUpCard1(), getCard2Number());
             int balance1 = balanceTo + amount;
             String sum1 = String.valueOf(balance1);
             $(withText(sum1)).shouldBe(Condition.visible);
@@ -59,7 +62,7 @@ public class TransferTest {
             DashBoardPage.actionTransferToCard2();
 
 
-            ActionTransferPage.transferToCard2(sum);
+            ActionTransferPage.transferToCard(sum, getValueTopUpCard2(), getCard1Number());
             $(byText("Ваши карты")).shouldBe(Condition.visible);
             int balance1 = balanceTo + amount;
             String sum1 = String.valueOf(balance1);
@@ -80,7 +83,7 @@ public class TransferTest {
         String sum = String.valueOf(amount);
         DashBoardPage.actionTransferToCard1();
 
-        ActionTransferPage.transferToCard1(sum);
+        ActionTransferPage.transferToCard(sum, getValueTopUpCard1(), getCard2Number());
 
         $("[data-test-id='error-notification']").shouldBe(Condition.visible);
 
@@ -94,7 +97,7 @@ public class TransferTest {
         String sum = String.valueOf(amount);
         DashBoardPage.actionTransferToCard2();
 
-        ActionTransferPage.transferToCard2(sum);
+        ActionTransferPage.transferToCard(sum, getValueTopUpCard2(), getCard1Number());
 
         $("[data-test-id='error-notification']").shouldBe(Condition.visible);
 
