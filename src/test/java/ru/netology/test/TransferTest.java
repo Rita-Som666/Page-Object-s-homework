@@ -2,88 +2,100 @@ package ru.netology.test;
 
 
 import com.codeborne.selenide.Condition;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.netology.data.UserInfo;
+
 import ru.netology.page.ActionTransferPage;
 import ru.netology.page.DashBoardPage;
 import ru.netology.page.LoginPage;
 import ru.netology.page.VerificationPage;
 
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selectors.withText;
+
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
-import static ru.netology.data.UserInfo.CardsInfo.*;
+
 
 import ru.netology.data.UserInfo.CardsInfo;
 
 public class TransferTest {
+
     @BeforeEach
     void shouldAuthorization() {
         open("http://localhost:9999/");
-        var loginPge = new LoginPage();
-        loginPge.validLogin();
-        VerificationPage.validCode();
+        var loginPage = new LoginPage();
+        loginPage.validLogin();
+
+        var verificationPage = new VerificationPage();
+
+        verificationPage.validCode();
     }
+
 
     @Test
     void shouldTransferToCard1() {
+        var dashBoardPage = new DashBoardPage();
 
-        var balance = DashBoardPage.getCard2Balance();
-        var balanceTo = DashBoardPage.getCard1Balance();
-        int amount = 700;
-        if (balance - amount >= 0) {
-            String sum = String.valueOf(amount);
-            DashBoardPage.actionTransferToCard1();
+        var balance = dashBoardPage.getCard2Balance();
+        var balanceTo = dashBoardPage.getCard1Balance();
+        var cardsInfo = new CardsInfo();
 
 
-            ActionTransferPage.transferToCard(sum, getValueTopUpCard1(), getCard2Number());
-            int balance1 = balanceTo + amount;
-            String sum1 = String.valueOf(balance1);
-            $(withText(sum1)).shouldBe(Condition.visible);
-            int balance2 = balance - amount;
-            String sum2 = String.valueOf(balance2);
-            $(withText(sum2)).shouldBe(Condition.visible);
-        }
+        int amount = balance - balance / 4;
+
+        String sum = String.valueOf(amount);
+        dashBoardPage.actionTransferToCard1();
+        var actionTransferPage = new ActionTransferPage();
+        actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard1(), cardsInfo.getCard2Number());
+
+        int expected1 = balanceTo + amount;
+        int actual1 = dashBoardPage.getCard1Balance();
+        Assertions.assertEquals(expected1, actual1);
+
+        int expected2 = balance - amount;
+        int actual2 = dashBoardPage.getCard2Balance();
+        Assertions.assertEquals(expected2, actual2);
 
 
     }
 
     @Test
     void shouldTransferToCard2() {
+        var dashBoardPage = new DashBoardPage();
 
-        var balance = DashBoardPage.getCard1Balance();
-        var balanceTo = DashBoardPage.getCard2Balance();
-        int amount = 1000;
-
-        if (balance - amount >= 0) {
-            String sum = String.valueOf(amount);
-            DashBoardPage.actionTransferToCard2();
+        var balance = dashBoardPage.getCard1Balance();
+        var balanceTo = dashBoardPage.getCard2Balance();
+        var cardsInfo = new CardsInfo();
+        int amount = balance - balance / 4;
 
 
-            ActionTransferPage.transferToCard(sum, getValueTopUpCard2(), getCard1Number());
-            $(byText("Ваши карты")).shouldBe(Condition.visible);
-            int balance1 = balanceTo + amount;
-            String sum1 = String.valueOf(balance1);
-            $(withText(sum1)).shouldBe(Condition.visible);
-            int balance2 = balance - amount;
-            String sum2 = String.valueOf(balance2);
-            $(withText(sum2)).shouldBe(Condition.visible);
-        }
+        String sum = String.valueOf(amount);
+        dashBoardPage.actionTransferToCard2();
+
+        var actionTransferPage = new ActionTransferPage();
+        actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard2(), cardsInfo.getCard1Number());
+        int expected1 = balanceTo + amount;
+        int actual1 = dashBoardPage.getCard2Balance();
+        Assertions.assertEquals(expected1, actual1);
+
+        int expected2 = balance - amount;
+        int actual2 = dashBoardPage.getCard1Balance();
+        Assertions.assertEquals(expected2, actual2);
 
 
     }
 
     @Test
     void shouldNotTransferToCard1() {
+        var dashBoardPage = new DashBoardPage();
 
-        var balance = DashBoardPage.getCard2Balance();
+        var balance = dashBoardPage.getCard2Balance();
+        var cardsInfo = new CardsInfo();
         int amount = balance + 10;
         String sum = String.valueOf(amount);
-        DashBoardPage.actionTransferToCard1();
-
-        ActionTransferPage.transferToCard(sum, getValueTopUpCard1(), getCard2Number());
+        dashBoardPage.actionTransferToCard1();
+        var actionTransferPage = new ActionTransferPage();
+        actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard1(), cardsInfo.getCard2Number());
 
         $("[data-test-id='error-notification']").shouldBe(Condition.visible);
 
@@ -92,14 +104,19 @@ public class TransferTest {
     @Test
     void shouldNotTransferToCard2() {
 
-        var balance = DashBoardPage.getCard1Balance();
+        var dashBoardPage = new DashBoardPage();
+
+        var balance = dashBoardPage.getCard1Balance();
+        var cardsInfo = new CardsInfo();
         int amount = balance + 10;
         String sum = String.valueOf(amount);
-        DashBoardPage.actionTransferToCard2();
-
-        ActionTransferPage.transferToCard(sum, getValueTopUpCard2(), getCard1Number());
+        dashBoardPage.actionTransferToCard2();
+        var actionTransferPage = new ActionTransferPage();
+        actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard2(), cardsInfo.getCard1Number());
 
         $("[data-test-id='error-notification']").shouldBe(Condition.visible);
 
     }
+
+
 }
