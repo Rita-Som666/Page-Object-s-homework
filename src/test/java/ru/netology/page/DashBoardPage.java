@@ -3,8 +3,6 @@ package ru.netology.page;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 import lombok.val;
 
@@ -12,8 +10,7 @@ import lombok.val;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-@Data
-@AllArgsConstructor
+
 public class DashBoardPage {
     private ElementsCollection topUpCards = $$("[data-test-id='action-deposit'");
     private SelenideElement topUpCard1 = topUpCards.get(0);

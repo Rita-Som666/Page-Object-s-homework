@@ -1,34 +1,34 @@
 package ru.netology.test;
 
 
-import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import ru.netology.data.UserInfo;
 import ru.netology.page.ActionTransferPage;
 import ru.netology.page.DashBoardPage;
 import ru.netology.page.LoginPage;
 import ru.netology.page.VerificationPage;
 
 
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
-
-import ru.netology.data.UserInfo.CardsInfo;
 
 public class TransferTest {
 
     @BeforeEach
     void shouldAuthorization() {
+
         open("http://localhost:9999/");
+        var validUser = UserInfo.getUser();
         var loginPage = new LoginPage();
-        loginPage.validLogin();
+        loginPage.validLogin(validUser);
 
         var verificationPage = new VerificationPage();
+        var validCode = UserInfo.getCode();
 
-        verificationPage.validCode();
+        verificationPage.validCode(validCode);
     }
 
 
@@ -38,7 +38,7 @@ public class TransferTest {
 
         var balance = dashBoardPage.getCard2Balance();
         var balanceTo = dashBoardPage.getCard1Balance();
-        var cardsInfo = new CardsInfo();
+        var cardsInfo = UserInfo.getCards();
 
 
         int amount = balance - balance / 4;
@@ -65,7 +65,7 @@ public class TransferTest {
 
         var balance = dashBoardPage.getCard1Balance();
         var balanceTo = dashBoardPage.getCard2Balance();
-        var cardsInfo = new CardsInfo();
+        var cardsInfo = UserInfo.getCards();
         int amount = balance - balance / 4;
 
 
@@ -74,6 +74,7 @@ public class TransferTest {
 
         var actionTransferPage = new ActionTransferPage();
         actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard2(), cardsInfo.getCard1Number());
+
         int expected1 = balanceTo + amount;
         int actual1 = dashBoardPage.getCard2Balance();
         Assertions.assertEquals(expected1, actual1);
@@ -90,14 +91,14 @@ public class TransferTest {
         var dashBoardPage = new DashBoardPage();
 
         var balance = dashBoardPage.getCard2Balance();
-        var cardsInfo = new CardsInfo();
+        var cardsInfo = UserInfo.getCards();
         int amount = balance + 10;
         String sum = String.valueOf(amount);
         dashBoardPage.actionTransferToCard1();
         var actionTransferPage = new ActionTransferPage();
         actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard1(), cardsInfo.getCard2Number());
 
-        $("[data-test-id='error-notification']").shouldBe(Condition.visible);
+        actionTransferPage.errorOfTransfer();
 
     }
 
@@ -107,14 +108,14 @@ public class TransferTest {
         var dashBoardPage = new DashBoardPage();
 
         var balance = dashBoardPage.getCard1Balance();
-        var cardsInfo = new CardsInfo();
+        var cardsInfo = UserInfo.getCards();
         int amount = balance + 10;
         String sum = String.valueOf(amount);
         dashBoardPage.actionTransferToCard2();
         var actionTransferPage = new ActionTransferPage();
         actionTransferPage.transferToCard(sum, cardsInfo.getValueTopUpCard2(), cardsInfo.getCard1Number());
 
-        $("[data-test-id='error-notification']").shouldBe(Condition.visible);
+        actionTransferPage.errorOfTransfer();
 
     }
 
