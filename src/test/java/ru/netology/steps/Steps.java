@@ -22,23 +22,32 @@ public class Steps {
     private static ActionTransferPage actionTransferPage;
     private static User user;
 
-    @Пусть("пользователь залогинен с именем 'vasya' и паролем 'qwerty123'")
-    public void authorise(String url, User user, Verify verify){
+    @Пусть("пользователь залогинен на {string} с именем 'vasya' и паролем 'qwerty123'")
+    public void authorise(String url) {
+        User user = UserInfo.getUser();
+        Verify verify = UserInfo.getCode();
         loginPage = Selenide.open(url, LoginPage.class);
         verificationPage = loginPage.validLogin(user);
         dashBoardPage = verificationPage.validCode(verify);
     }
 
-    @Когда("пользователь переводит {string} рублей с карты с номером 5559 0000 0000 0002 на свою 1 карту с главной страницы")
-    void transfer(String sum){
-        actionTransferPage = dashBoardPage.actionTransferToCard1();
-        actionTransferPage.transferToCard(sum, UserInfo.getCards().getValueTopUpCard1(), UserInfo.getCards().getCard2Number());
-
+    @Когда("пользователь переводит {string} рублей с карты с номером {string} на свою {int} карту с главной страницы")
+    public void transfer(String sum, String cardNumber, Integer cardIndex) {
+        if (cardIndex == 1) {
+            actionTransferPage = dashBoardPage.actionTransferToCard1();
+        } else {
+            actionTransferPage = dashBoardPage.actionTransferToCard2();
+        }
+        actionTransferPage.transferToCard(sum, UserInfo.getCards().getValueTopUpCard1(), cardNumber);
     }
 
-    @Тогда("баланс его 1 карты из списка на главной странице должен стать {string} рублей")
-    void balance(String sum){
+    @Тогда("баланс его {int} карты из списка на главной странице должен стать {string} рублей")
+    public void balance(Integer cardIndex, String sum) {
         int balance = Integer.parseInt(sum);
-        Assertions.assertEquals(balance, dashBoardPage.getCard1Balance());
+        if (cardIndex == 1) {
+            Assertions.assertEquals(balance, dashBoardPage.getCard1Balance());
+        } else {
+            Assertions.assertEquals(balance, dashBoardPage.getCard2Balance());
+        }
     }
 }
